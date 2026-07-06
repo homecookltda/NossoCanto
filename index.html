@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nossa Casa · Painel de Apartamentos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* ---- Neutros (papel quente) ---- */
+  --bg: #f6f5f1;            /* fundo da aplicação */
+  --surface-card: #ffffff;  /* cartões, painéis */
+  --surface-inset: #fafaf7; /* inputs, células kv, thead */
+  --ink: #21252b;           /* texto principal */
+  --ink-2: #4b5158;         /* texto secundário */
+  --muted: #6e747b;         /* rótulos, legendas */
+  --line: #e7e4dd;          /* bordas padrão */
+  --line-strong: #d5d1c7;   /* bordas de foco leve / divisores fortes */
+
+  /* ---- Marca ---- */
+  --accent: #2f6b4f;        /* verde Nossa Casa — ações, foco, seleção */
+  --accent-ink: #24543e;    /* hover/pressed do accent */
+  --accent-soft: #e8f1ec;   /* fundos de seleção, hover de linha */
+  --accent-ring: rgba(47, 107, 79, 0.22); /* anel de foco */
+  --on-accent: #ffffff;
+
+  /* ---- Semânticas de domínio ---- */
+  --venda: #6b4ec9;         /* operação Venda (mapa + tags) */
+  --venda-soft: #efeafa;
+  --aluguel: #0e7490;       /* operação Aluguel (mapa + tags) */
+  --aluguel-soft: #e3f2f6;
+  --norte: #2563a8;         /* Asa Norte */
+  --norte-soft: #e8f0f9;
+  --sul: #b45309;           /* Asa Sul */
+  --sul-soft: #fdf0e3;
+
+  /* ---- Estado ---- */
+  --good: #2e7d4f;
+  --good-soft: #e7f4ec;
+  --warn: #b45309;
+  --warn-soft: #fdf0e3;
+  --bad: #c2413b;
+  --bad-soft: #fbe9e8;
+
+  /* ---- Aliases semânticos ---- */
+  --text-body: var(--ink);
+  --text-secondary: var(--ink-2);
+  --text-label: var(--muted);
+  --border-input: var(--line);
+  --border-input-focus: var(--accent);
+  --surface-hover: var(--accent-soft);
+}
+
+:root {
+  --font-sans: "Figtree", -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  /* Escala */
+  --text-xs: 11px;    /* rótulos uppercase, contadores */
+  --text-sm: 12.5px;  /* legendas, metadados */
+  --text-base: 14px;  /* corpo padrão da UI */
+  --text-md: 15px;    /* corpo destacado, células principais */
+  --text-lg: 17px;    /* títulos de modal/seção */
+  --text-xl: 20px;    /* título de página */
+  --text-num: 22px;   /* números de destaque (stats) */
+  --text-display: 28px; /* preço em destaque */
+
+  /* Pesos */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+
+  /* Rótulo uppercase padrão (filtros, thead, stats) */
+  --label-tracking: 0.06em;
+}
+
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Raios (herdados do painel original) */
+  --radius-card: 14px;
+  --radius-modal: 18px;
+  --radius-input: 10px;
+  --radius-btn: 10px;
+  --radius-sm: 8px;
+  --radius-pill: 999px;
+
+  /* Alvos de toque */
+  --hit-min: 36px;   /* desktop denso */
+  --hit-touch: 44px; /* mobile */
+}
+
+:root {
+  --shadow-card: 0 1px 2px rgba(24, 30, 26, 0.04), 0 8px 24px rgba(24, 30, 26, 0.06);
+  --shadow-pop: 0 12px 40px rgba(24, 30, 26, 0.16);
+  --shadow-btn: 0 2px 8px rgba(47, 107, 79, 0.25);
+  --focus-ring: 0 0 0 3px var(--accent-ring);
+
+  --ease-spring: cubic-bezier(0.2, 0.8, 0.2, 1); /* @kind other */
+  --dur-fast: 0.15s; /* @kind other */
+  --dur-base: 0.2s; /* @kind other */
+  --dur-slow: 0.3s; /* @kind other */
+
+  --backdrop: rgba(24, 30, 26, 0.45);
+}
+
+
+
+
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--ink);font-size:var(--text-base);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+#root,.shell{height:100%}
+.shell{display:flex;flex-direction:column}
+
+/* ---------- header ---------- */
+header.top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:10px 18px;flex:0 0 auto}
+header.top .brand{font-weight:800;letter-spacing:-.01em;font-size:16px}
+header.top .brand small{color:var(--muted);font-weight:500;margin-left:4px;font-size:12.5px;font-variant-numeric:tabular-nums}
+header.top .spacer{flex:1}
+header.top .who{color:var(--muted);font-size:var(--text-sm)}
+.menuBtn{display:none;align-items:center;gap:6px;font:inherit;font-weight:600;font-size:13px;padding:7px 12px;
+  border:1px solid var(--line);border-radius:9px;background:var(--surface-card);color:var(--ink);cursor:pointer}
+
+/* ---------- layout: filtros SEMPRE visíveis ---------- */
+.layout{display:grid;grid-template-columns:288px 1fr;gap:0;flex:1;min-height:0}
+aside.filters{background:var(--surface-card);border-right:1px solid var(--line);overflow-y:auto;padding:14px 16px 20px;min-height:0}
+.fTop{display:flex;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.fTop b{font-size:14px;display:flex;align-items:center;gap:7px}
+.fTop .fsecReset{margin-left:auto}
+.fsec{padding:10px 0 4px}
+.fsecHead{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.fsecHead h3{font-size:var(--text-xs);text-transform:uppercase;letter-spacing:var(--label-tracking);
+  color:var(--muted);margin:0;font-weight:700;display:flex;align-items:center;gap:6px}
+.activeDot{width:7px;height:7px;border-radius:50%;background:var(--accent);display:inline-block}
+.fsecReset{border:none;background:none;color:var(--accent);font:inherit;font-size:11.5px;font-weight:600;cursor:pointer;padding:2px 4px;border-radius:6px}
+.fsecReset:hover{background:var(--accent-soft)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.numGroup{display:flex;gap:6px}
+.numBtn{flex:1;padding:7px 0;border:1px solid var(--line);border-radius:9px;background:var(--surface-inset);
+  font:inherit;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer;transition:all var(--dur-fast) ease}
+.numBtn:hover{border-color:var(--line-strong)}
+.numBtn.on{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:var(--shadow-btn)}
+.fApply{margin-top:14px}
+.quadraList{max-height:230px;overflow-y:auto;padding-right:2px}
+
+/* ---------- conteúdo ---------- */
+main{display:flex;flex-direction:column;min-width:0;min-height:0;padding:12px 16px 16px;gap:10px}
+.chipsBar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex:0 0 auto}
+.countLine{color:var(--muted);font-size:var(--text-sm)}
+.countLine b{color:var(--ink)}
+
+/* topo fixo (chips + KPIs) e area rolavel apenas da tabela */
+.topFixed{flex:0 0 auto;display:flex;flex-direction:column;gap:12px;margin-bottom:12px}
+.listCol{display:flex;flex-direction:column;min-height:0;gap:8px;flex:1}
+.sortRow{display:flex;gap:8px;align-items:center;flex:0 0 auto}
+.dirBtn{padding:8px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface-card);
+  font:inherit;font-weight:700;cursor:pointer;color:var(--ink-2)}
+.dirBtn:hover{background:var(--surface-inset)}
+.list{overflow-y:auto;min-height:0;display:flex;flex-direction:column;gap:8px;padding-right:2px;padding-bottom:4px}
+.empty{padding:40px;text-align:center;color:var(--muted);background:var(--surface-card);
+  border:1px solid var(--line);border-radius:var(--radius-card)}
+
+/* ---------- tabela condensada (sem scroll horizontal) ---------- */
+.listCol{overflow:hidden}
+.listTable{width:100%;height:100%;border-collapse:collapse;background:var(--surface-card);border:1px solid var(--line);
+  border-radius:var(--radius-card);table-layout:fixed;display:flex;flex-direction:column;min-height:0}
+.listTable thead,.listTable tbody{display:block;width:100%}
+.listTable tr{display:flex;align-items:center;width:100%}
+.listTable thead tr{border-bottom:1px solid var(--line);background:var(--surface-inset)}
+.listTable th{flex:1 1 0;min-width:0;text-align:left;padding:9px 10px;font-size:10.5px;text-transform:uppercase;
+  letter-spacing:var(--label-tracking);color:var(--muted);font-weight:700;cursor:default;user-select:none}
+.listTable th:first-child{flex:2.4 1 0}
+.listTable th.sortable{cursor:pointer}
+.listTable th.sortable:hover{color:var(--ink)}
+.listTable th .arrow{opacity:.5;font-size:9px;margin-left:3px}
+.listTable tbody{overflow-y:auto;flex:1;min-height:0}
+.listTable td{flex:1 1 0;min-width:0;padding:10px;border-bottom:1px solid var(--line);vertical-align:middle;overflow:hidden}
+.listTable td:first-child{flex:2.4 1 0}
+.listTable tbody tr{cursor:pointer;transition:background var(--dur-fast) ease}
+.listTable tbody tr:nth-child(even){background:var(--surface-inset)}
+.listTable tbody tr:hover{background:var(--accent-soft)}
+.listTable tbody tr.inativo{opacity:.55}
+.listTable tbody tr:last-child td{border-bottom:none}
+.tPrimary{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tPreco{font-weight:700;font-size:14.5px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.tDot{width:7px;height:7px;border-radius:50%;flex:0 0 auto}
+.tSub{margin-top:3px;font-size:12px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tSub b{color:var(--ink);font-weight:600}
+.tNum{font-variant-numeric:tabular-nums;font-size:13px;color:var(--ink-2);white-space:nowrap}
+.tActions{display:flex;gap:6px;flex-wrap:wrap}
+.tBtn{padding:5px 9px;border-radius:7px;border:1px solid var(--line);background:var(--surface-inset);
+  font:inherit;font-size:11.5px;font-weight:600;color:var(--accent-ink);cursor:pointer}
+.tBtn:hover{background:var(--accent-soft);border-color:var(--accent)}
+.tEmpty{padding:40px;text-align:center;color:var(--muted);width:100%}
+@media (max-width:560px){
+  .listTable th:nth-child(3),.listTable td:nth-child(3){display:none} /* esconde "Dias" no menor breakpoint */
+  .listTable th:first-child,.listTable td:first-child{flex:1.6 1 0}
+}
+
+/* ---------- resumo (KPIs sempre visíveis, no topo) ---------- */
+.statsWrap{display:flex;flex-direction:column;gap:12px}
+.scopeRow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.statsGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+
+/* ---------- modal ---------- */
+.modalBg{position:fixed;inset:0;background:var(--backdrop);backdrop-filter:blur(3px);z-index:40;
+  display:flex;align-items:center;justify-content:center;padding:20px;animation:fade .2s}
+.modal{background:var(--surface-card);width:min(720px,96vw);max-height:92vh;overflow:auto;border-radius:var(--radius-modal);
+  box-shadow:var(--shadow-pop);animation:pop .35s var(--ease-spring)}
+.mhead{display:flex;align-items:flex-start;gap:12px;padding:20px 22px 6px}
+.mhead h2{font-size:20px;margin:0;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.mhead .sub{color:var(--muted);font-size:13px;margin-top:3px}
+.xBtn{margin-left:auto;font-size:18px;color:var(--muted);padding:2px 9px;border-radius:8px;border:none;background:none;cursor:pointer;font-family:inherit}
+.xBtn:hover{background:var(--line)}
+.mbody{padding:8px 22px 22px}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:10px 0}
+.cell{background:var(--surface-inset);border:1px solid var(--line);border-radius:var(--radius-input);padding:9px 11px}
+.cell .kk{color:var(--muted);font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:var(--label-tracking)}
+.cell .vv{font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums}
+.descCell{margin-top:10px}
+.descTxt{margin-top:4px;white-space:pre-wrap;font-size:13.5px;color:var(--ink-2)}
+.crm{border-top:1px solid var(--line);margin-top:14px;padding-top:16px}
+.crm h3{margin:0 0 12px;font-size:14px}
+.togs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.crmGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.areaLbl{display:block;margin-top:12px;font-size:var(--text-xs);color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:var(--label-tracking)}
+.areaLbl textarea{width:100%;margin-top:6px;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius-input);
+  background:var(--surface-inset);font:inherit;font-size:14px;color:var(--ink);text-transform:none;letter-spacing:normal;resize:vertical}
+.areaLbl textarea:focus{outline:none;border-color:var(--accent);box-shadow:var(--focus-ring);background:#fff}
+.savebar{display:flex;gap:10px;align-items:center;margin-top:14px}
+.savedMsg{color:var(--good);font-size:12.5px;opacity:0;transition:opacity var(--dur-slow)}
+.savedMsg.show{opacity:1}
+
+/* ---------- toast / anims ---------- */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;
+  padding:11px 18px;border-radius:12px;box-shadow:var(--shadow-pop);z-index:70;opacity:0;transition:opacity var(--dur-slow);pointer-events:none}
+.toast.show{opacity:1}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+.drawerBg{display:none}
+.drawerOnly{display:none}
+
+/* ============================ RESPONSIVO ============================ */
+@media (max-width:820px){
+  header.top{padding:10px 12px;gap:8px}
+  header.top .who{display:none}
+  .menuBtn{display:inline-flex}
+  .layout{grid-template-columns:1fr}
+  aside.filters{position:fixed;top:0;left:0;height:100dvh;width:86vw;max-width:340px;z-index:45;
+    transform:translateX(-100%);transition:transform .28s var(--ease-spring);box-shadow:var(--shadow-pop)}
+  aside.filters.open{transform:translateX(0)}
+  .drawerBg{display:block;position:fixed;inset:0;background:var(--backdrop);backdrop-filter:blur(2px);z-index:44;animation:fade .2s}
+  .drawerOnly{display:flex}
+  input,select,textarea{font-size:16px !important} /* evita zoom do iOS */
+  .crmGrid{grid-template-columns:1fr}
+  .kv{grid-template-columns:1fr 1fr}
+  .modalBg{padding:0;align-items:flex-end}
+  .modal{width:100%;max-height:94dvh;border-radius:20px 20px 0 0;animation:slideup .3s var(--ease-spring)}
+  /* no celular a pagina toda rola normalmente (mais natural em telas pequenas do que uma area
+     interna com scroll proprio); os KPIs continuam no topo, so' deixam de ser "presos". */
+  main{overflow-y:auto}
+  .listCol{overflow:visible}
+  .listTable{max-height:none;height:auto}
+  .listTable tbody{overflow-y:visible}
+}
+@keyframes slideup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+/* ============================ Adições (login, galeria, lightbox, miniatura) ============================ */
+#login{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(160deg,var(--bg),#eef0ea);font-family:var(--font-sans)}
+.loginCard{background:var(--surface-card);width:min(380px,92vw);padding:36px 30px;border-radius:var(--radius-modal);
+  box-shadow:var(--shadow-pop);animation:pop .5s var(--ease-spring)}
+.loginCard h1{font-size:21px;margin:0 0 4px;letter-spacing:-.01em;font-weight:800}
+.loginCard p{color:var(--muted);margin:0 0 22px;font-size:var(--text-sm)}
+.loginField{margin-bottom:14px}
+.loginField label{display:block;font-size:var(--text-xs);color:var(--muted);margin-bottom:6px;font-weight:700;
+  text-transform:uppercase;letter-spacing:var(--label-tracking)}
+.loginField input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:var(--radius-input);
+  background:var(--surface-inset);font:inherit;font-size:var(--text-base);color:var(--ink);
+  transition:all var(--dur-fast) ease;box-sizing:border-box}
+.loginField input:focus{outline:none;border-color:var(--accent);background:#fff;box-shadow:var(--focus-ring)}
+.loginBtn{background:var(--accent);color:var(--on-accent);padding:11px 16px;border-radius:var(--radius-btn);
+  font-weight:700;width:100%;border:none;cursor:pointer;font:inherit;font-size:var(--text-base);
+  transition:all var(--dur-fast) ease;box-shadow:var(--shadow-btn)}
+.loginBtn:hover{background:var(--accent-ink);transform:translateY(-1px)}
+.loginErr{color:var(--bad);font-size:12.5px;min-height:16px;margin-top:6px}
+.bootLoading{display:flex;align-items:center;justify-content:center;height:60vh;color:var(--muted);
+  font-size:var(--text-sm);gap:8px;font-family:var(--font-sans)}
+.bootSpin{width:20px;height:20px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;
+  display:inline-block;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.galleryGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin:14px 0}
+.galleryGrid img{width:100%;height:88px;object-fit:cover;border-radius:var(--radius-input);
+  border:1px solid var(--line);cursor:zoom-in;transition:transform var(--dur-fast) ease,box-shadow var(--dur-fast) ease;
+  background:var(--surface-inset)}
+.galleryGrid img:hover{transform:scale(1.03);box-shadow:var(--shadow-card)}
+.lightboxBg{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:80;display:none;align-items:center;
+  justify-content:center;padding:20px;cursor:zoom-out}
+.lightboxBg.open{display:flex;animation:fade .2s}
+.lightboxBg img{max-width:96vw;max-height:92vh;border-radius:10px}
+
+.tThumb{width:34px;height:26px;object-fit:cover;border-radius:6px;border:1px solid var(--line);flex:0 0 auto}
+
+.filterSubLabel{margin:8px 0 2px;font-size:10.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:var(--label-tracking)}
+.viewsBadge{font-size:11px;color:var(--muted);background:var(--surface-inset);border:1px solid var(--line);
+  border-radius:var(--radius-pill);padding:1px 7px;font-variant-numeric:tabular-nums}
+.tBtn.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.markList{margin-top:10px;font-size:var(--text-sm);color:var(--ink-2)}
+.markList b{color:var(--ink);font-weight:700;font-size:var(--text-xs);text-transform:uppercase;letter-spacing:var(--label-tracking)}
+.markList ul{margin:4px 0 0;padding-left:18px}
+.markList li{margin:2px 0}
+
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="loginCard">
+    <h1>Nossa Casa</h1>
+    <p>Painel de apartamentos — acesso restrito.</p>
+    <div class="loginField"><label>E-mail</label><input id="email" type="email" autocomplete="username" placeholder="voce@email.com"></div>
+    <div class="loginField"><label>Senha</label><input id="senha" type="password" autocomplete="current-password" placeholder="••••••••"></div>
+    <button class="loginBtn" id="btnLogin" type="button">Entrar</button>
+    <div class="loginErr" id="loginErr"></div>
+  </div>
+</div>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+/* ============================================================================================
+   CONFIG + BOOTSTRAP — a chave ANON é pública por design (segura sozinha; o RLS protege os dados).
+   NUNCA coloque aqui a service_role.
+============================================================================================ */
+const SUPABASE_URL = "https://qxhgylbajvavdvrtbbta.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF4aGd5bGJhanZhdmR2cnRiYnRhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyMjU5NzgsImV4cCI6MjA5ODgwMTk3OH0.UL32kC6UYH4goT532jGVgVVhmDZLpaYMFDWInRadM74";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY,
+  { auth: { persistSession: true, autoRefreshToken: true } });
+window.sb = sb;
+
+const VENDA_OUTLIER = 100000000, ALUGUEL_OUTLIER = 200000;
+function sanitizaPreco(r) {
+  let p = r.preco;
+  if (p != null) {
+    if (r.tipo === "Venda") { while (p >= VENDA_OUTLIER) p /= 1000; }
+    else if (r.tipo === "Aluguel") { while (p >= ALUGUEL_OUTLIER) p /= 1000; }
+    p = Math.round(p * 100) / 100;
+    if (p !== r.preco) {
+      r = { ...r, preco: p, preco_m2: r.metragem_m2 ? Math.round((p / r.metragem_m2) * 100) / 100 : r.preco_m2 };
+    }
+  }
+  return r;
+}
+
+function diasDesdePub(r) {
+  if (!r.data_publicacao) return null;
+  const d = new Date(r.data_publicacao + "T00:00:00");
+  return Math.max(0, Math.round((new Date() - d) / 86400000));
+}
+
+function andarDe(r) {
+  const t = ((r.titulo || "") + " " + (r.descricao || "")).toLowerCase();
+  if (/t[ée]rreo/.test(t)) return 0;
+  if (/cobertura/.test(t)) return 99;
+  let m = t.match(/(\d{1,2})\s*[ºo°]?\s*(?:andar|pavimento|pav\.)/);
+  if (m) return parseInt(m[1]);
+  m = t.match(/(?:andar|pavimento)\s*(\d{1,2})/);
+  if (m) return parseInt(m[1]);
+  return null;
+}
+
+function emailPrefix(email) {
+  return (email || "").split("@")[0];
+}
+
+function mapRow(r0) {
+  const r = sanitizaPreco(r0);
+  return {
+    id: r.id, tipo: r.tipo, regiao: r.regiao,
+    quadra: r.localizacao_exata || r.quadra, quadraBase: r.quadra,
+    quartos: r.quartos, banheiros: r.banheiros, suites: r.suites, vagas: r.vagas,
+    m2: r.metragem_m2, preco: r.preco, precoM2: r.preco_m2, condominio: r.condominio,
+    andar: andarDe(r), dias: diasDesdePub(r), ativo: r.ativo,
+    contatado: r.contatado, dataContato: r.data_contato,
+    nota: r.nota, proposta: r.proposta, contraproposta: r.contraproposta,
+    contatoNome: r.contato_nome, contatoWhats: r.contato_whats, contatoTipo: r.contato_tipo,
+    comentarios: r.comentarios, lat: r.latitude, lng: r.longitude,
+    descricao: r.descricao, creci: r.creci, link: r.link,
+    imagens: r.imagens || [], foto: (r.imagens && r.imagens[0]) || null,
+    titulo: r.titulo,
+    /* marcações compartilhadas (visualizado / sem interesse) — minhas e de todos os usuários */
+    meuVisualizado: r.meu_visualizado || false,
+    minhaDataVisualizacao: r.minha_data_visualizacao || null,
+    meuSemInteresse: r.meu_sem_interesse || false,
+    minhaDataSemInteresse: r.minha_data_sem_interesse || null,
+    visualizadoPor: r.visualizado_por || [],
+    totalVisualizadoPor: r.total_visualizado_por || 0,
+    semInteressePor: r.sem_interesse_por || [],
+    totalSemInteresse: r.total_sem_interesse || 0,
+  };
+}
+
+async function fetchAllData() {
+  let all = [], from = 0, size = 1000;
+  while (true) {
+    const { data, error } = await sb.from("v_dashboard").select("*").range(from, from + size - 1);
+    if (error) { console.error(error); throw error; }
+    all = all.concat(data);
+    if (data.length < size) break;
+    from += size;
+  }
+  return all;
+}
+window.fetchAllData = fetchAllData;
+window.mapRow = mapRow;
+window.sanitizaPreco = sanitizaPreco;
+window.emailPrefix = emailPrefix;
+
+let __resolveAuth;
+window.__authReady = new Promise((res) => { __resolveAuth = res; });
+
+function showApp(user) {
+  document.getElementById("login").style.display = "none";
+  document.getElementById("root").innerHTML = '<div class="bootLoading"><span class="bootSpin"></span> Carregando seus dados…</div>';
+  __resolveAuth({ user });
+}
+
+async function doLogin() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("senha").value;
+  const errEl = document.getElementById("loginErr");
+  errEl.textContent = "";
+  if (!email || !password) { errEl.textContent = "Preencha e-mail e senha."; return; }
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) { errEl.textContent = "Falha no login: " + error.message; return; }
+  showApp(data.user);
+}
+document.getElementById("btnLogin").addEventListener("click", doLogin);
+document.getElementById("senha").addEventListener("keydown", (e) => { if (e.key === "Enter") doLogin(); });
+
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) showApp(session.user);
+})();
+</script>
+
+<script>
+/** Badge numérico pequeno (nota do usuário, contagem de filtros ativos). */
+function Badge({
+  tone = "accent",
+  children,
+  style
+}) {
+  const tones = {
+    accent: {
+      background: "var(--accent)",
+      color: "#fff"
+    },
+    ink: {
+      background: "var(--ink)",
+      color: "#fff"
+    },
+    muted: {
+      background: "var(--surface-inset)",
+      color: "var(--muted)",
+      border: "1px solid var(--line)"
+    }
+  };
+  return /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      minWidth: "18px",
+      height: "18px",
+      padding: "0 6px",
+      borderRadius: "var(--radius-pill)",
+      fontSize: "10.5px",
+      fontWeight: "var(--weight-bold)",
+      fontFamily: "var(--font-sans)",
+      fontVariantNumeric: "tabular-nums",
+      ...tones[tone],
+      ...style
+    }
+  }, children);
+}
+
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+/**
+ * Botão do Nossa Casa. Variantes: primary (verde sólido), ghost (verde suave),
+ * outline (borda), danger. Tamanhos: sm | md.
+ */
+function Button({
+  variant = "primary",
+  size = "md",
+  fullWidth = false,
+  disabled = false,
+  children,
+  style,
+  ...rest
+}) {
+  const base = {
+    fontFamily: "var(--font-sans)",
+    fontWeight: "var(--weight-semibold)",
+    fontSize: size === "sm" ? "13px" : "var(--text-base)",
+    padding: size === "sm" ? "7px 12px" : "11px 16px",
+    borderRadius: size === "sm" ? "9px" : "var(--radius-btn)",
+    border: "1px solid transparent",
+    cursor: disabled ? "not-allowed" : "pointer",
+    width: fullWidth ? "100%" : undefined,
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "6px",
+    lineHeight: 1.3,
+    transition: "all var(--dur-fast) ease",
+    opacity: disabled ? 0.5 : 1,
+    userSelect: "none"
+  };
+  const variants = {
+    primary: {
+      background: "var(--accent)",
+      color: "var(--on-accent)",
+      boxShadow: "var(--shadow-btn)"
+    },
+    ghost: {
+      background: "var(--accent-soft)",
+      color: "var(--accent)"
+    },
+    outline: {
+      background: "var(--surface-card)",
+      color: "var(--ink)",
+      border: "1px solid var(--line)"
+    },
+    danger: {
+      background: "var(--bad)",
+      color: "#fff"
+    }
+  };
+  return /*#__PURE__*/React.createElement("button", _extends({
+    type: "button",
+    disabled: disabled,
+    style: {
+      ...base,
+      ...variants[variant],
+      ...style
+    },
+    onMouseEnter: e => {
+      if (disabled) return;
+      if (variant === "primary") e.currentTarget.style.background = "var(--accent-ink)";
+      if (variant === "outline") e.currentTarget.style.background = "var(--surface-inset)";
+      if (variant === "ghost") e.currentTarget.style.filter = "brightness(0.97)";
+      e.currentTarget.style.transform = "translateY(-1px)";
+    },
+    onMouseLeave: e => {
+      e.currentTarget.style.background = variants[variant].background;
+      e.currentTarget.style.filter = "";
+      e.currentTarget.style.transform = "";
+    },
+    onMouseDown: e => e.currentTarget.style.transform = "translateY(0)"
+  }, rest), children);
+}
+
+/**
+ * Chip de filtro ativo — mostra um filtro aplicado com botão de remoção.
+ * Resposta direta à dor "não sei quais filtros estão ativos".
+ */
+function Chip({
+  label,
+  value,
+  onRemove,
+  style
+}) {
+  return /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: "6px",
+      padding: "5px 6px 5px 11px",
+      borderRadius: "var(--radius-pill)",
+      background: "var(--accent-soft)",
+      border: "1px solid var(--accent)",
+      color: "var(--accent-ink)",
+      fontSize: "var(--text-sm)",
+      fontWeight: "var(--weight-semibold)",
+      fontFamily: "var(--font-sans)",
+      lineHeight: 1.3,
+      ...style
+    }
+  }, label ? /*#__PURE__*/React.createElement("span", {
+    style: {
+      opacity: 0.65,
+      fontWeight: "var(--weight-medium)"
+    }
+  }, label) : null, /*#__PURE__*/React.createElement("span", null, value), onRemove ? /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: onRemove,
+    "aria-label": "Remover filtro " + (label || value),
+    style: {
+      border: "none",
+      cursor: "pointer",
+      width: "18px",
+      height: "18px",
+      borderRadius: "50%",
+      background: "rgba(47,107,79,0.14)",
+      color: "var(--accent-ink)",
+      fontSize: "11px",
+      lineHeight: "18px",
+      padding: 0,
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontFamily: "inherit"
+    },
+    onMouseEnter: e => (e.currentTarget.style.background = "var(--accent)") && (e.currentTarget.style.color = "#fff"),
+    onMouseLeave: e => {
+      e.currentTarget.style.background = "rgba(47,107,79,0.14)";
+      e.currentTarget.style.color = "var(--accent-ink)";
+    }
+  }, "\u2715") : null);
+}
+
+/** Controle segmentado (abas Resumo/Mapa/Tabela, escopo Geral/Norte/Sul). */
+function Segmented({
+  options = [],
+  value,
+  onChange,
+  size = "md",
+  style
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "inline-flex",
+      gap: "4px",
+      background: "var(--surface-card)",
+      border: "1px solid var(--line)",
+      borderRadius: "12px",
+      padding: "4px",
+      boxShadow: "var(--shadow-card)",
+      ...style
+    },
+    role: "tablist"
+  }, options.map(opt => {
+    const o = typeof opt === "string" ? {
+      value: opt,
+      label: opt
+    } : opt;
+    const active = o.value === value;
+    return /*#__PURE__*/React.createElement("button", {
+      key: o.value,
+      type: "button",
+      role: "tab",
+      "aria-selected": active,
+      onClick: () => onChange && onChange(o.value),
+      style: {
+        padding: size === "sm" ? "6px 12px" : "8px 16px",
+        borderRadius: "9px",
+        border: "none",
+        cursor: "pointer",
+        fontFamily: "var(--font-sans)",
+        fontSize: size === "sm" ? "12.5px" : "var(--text-base)",
+        fontWeight: "var(--weight-semibold)",
+        background: active ? "var(--accent)" : "transparent",
+        color: active ? "#fff" : "var(--muted)",
+        boxShadow: active ? "var(--shadow-btn)" : "none",
+        transition: "all var(--dur-fast) ease",
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "6px"
+      },
+      onMouseEnter: e => {
+        if (!active) e.currentTarget.style.color = "var(--ink)";
+      },
+      onMouseLeave: e => {
+        if (!active) e.currentTarget.style.color = "var(--muted)";
+      }
+    }, o.label, o.count != null ? /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: "10.5px",
+        fontWeight: 700,
+        padding: "0 6px",
+        borderRadius: "999px",
+        background: active ? "rgba(255,255,255,0.25)" : "var(--surface-inset)",
+        color: active ? "#fff" : "var(--muted)",
+        border: active ? "none" : "1px solid var(--line)",
+        fontVariantNumeric: "tabular-nums"
+      }
+    }, o.count) : null);
+  }));
+}
+
+/**
+ * Tag de categoria com cor de domínio fixa: venda (violeta), aluguel (azul),
+ * norte, sul, ativo, inativo, neutra.
+ */
+function Tag({
+  kind = "neutra",
+  children,
+  style
+}) {
+  const kinds = {
+    venda: {
+      background: "var(--venda-soft)",
+      color: "var(--venda)"
+    },
+    aluguel: {
+      background: "var(--aluguel-soft)",
+      color: "var(--aluguel)"
+    },
+    norte: {
+      background: "var(--norte-soft)",
+      color: "var(--norte)"
+    },
+    sul: {
+      background: "var(--sul-soft)",
+      color: "var(--sul)"
+    },
+    ativo: {
+      background: "var(--good-soft)",
+      color: "var(--good)"
+    },
+    inativo: {
+      background: "var(--bad-soft)",
+      color: "var(--bad)"
+    },
+    neutra: {
+      background: "var(--surface-inset)",
+      color: "var(--muted)",
+      border: "1px solid var(--line)"
+    }
+  };
+  return /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "inline-block",
+      padding: "2px 9px",
+      borderRadius: "var(--radius-pill)",
+      fontSize: "var(--text-xs)",
+      fontWeight: "var(--weight-bold)",
+      fontFamily: "var(--font-sans)",
+      lineHeight: 1.6,
+      ...kinds[kind],
+      ...style
+    }
+  }, children);
+}
+
+/**
+ * Linha/cartão de anúncio — substitui a tabela de 16 colunas.
+ * Colunas condensadas (3q · 2b · 1v), sem scroll horizontal.
+ */
+function ListingCard({
+  listing = {},
+  onDetails,
+  onMap,
+  selected = false,
+  style
+}) {
+  const r = listing;
+  const [hover, setHover] = React.useState(false);
+  const fmt = v => v == null ? "—" : "R$ " + Number(v).toLocaleString("pt-BR", {
+    maximumFractionDigits: 0
+  });
+  const dot = r.meuVisualizado ? "var(--good)" : r.contatado ? "var(--warn)" : null;
+  return /*#__PURE__*/React.createElement("div", {
+    onMouseEnter: () => setHover(true),
+    onMouseLeave: () => setHover(false),
+    onClick: onDetails,
+    style: {
+      display: "grid",
+      gridTemplateColumns: "72px 1fr auto",
+      gap: "12px",
+      alignItems: "center",
+      background: selected ? "var(--accent-soft)" : "var(--surface-card)",
+      border: "1px solid " + (selected ? "var(--accent)" : "var(--line)"),
+      borderRadius: "var(--radius-card)",
+      padding: "10px 12px",
+      boxShadow: hover ? "var(--shadow-pop)" : "var(--shadow-card)",
+      cursor: "pointer",
+      transition: "all var(--dur-fast) ease",
+      opacity: r.ativo === false ? 0.55 : 1,
+      fontFamily: "var(--font-sans)",
+      ...style
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: "72px",
+      height: "56px",
+      borderRadius: "var(--radius-input)",
+      background: "var(--surface-inset)",
+      border: "1px solid var(--line)",
+      overflow: "hidden",
+      flex: "0 0 auto"
+    }
+  }, r.foto ? /*#__PURE__*/React.createElement("img", {
+    src: r.foto,
+    alt: "",
+    loading: "lazy",
+    style: {
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+      display: "block"
+    }
+  }) : null), /*#__PURE__*/React.createElement("div", {
+    style: {
+      minWidth: 0
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "baseline",
+      gap: "8px",
+      flexWrap: "wrap"
+    }
+  }, dot ? /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: "8px",
+      height: "8px",
+      borderRadius: "50%",
+      background: dot,
+      flex: "0 0 auto"
+    }
+  }) : null, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: "17px",
+      fontWeight: "var(--weight-bold)",
+      letterSpacing: "-0.01em",
+      fontVariantNumeric: "tabular-nums"
+    }
+  }, fmt(r.preco)), /*#__PURE__*/React.createElement(Tag, {
+    kind: r.tipo === "Venda" ? "venda" : "aluguel"
+  }, r.tipo || "—"), r.ativo === false ? /*#__PURE__*/React.createElement(Tag, {
+    kind: "inativo"
+  }, "Inativo") : null, r.nota != null ? /*#__PURE__*/React.createElement(Tag, {
+    kind: "ativo"
+  }, "Nota ", r.nota) : null), /*#__PURE__*/React.createElement("div", {
+    style: {
+      color: "var(--ink-2)",
+      fontSize: "var(--text-sm)",
+      marginTop: "3px",
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis"
+    }
+  }, /*#__PURE__*/React.createElement("b", {
+    style: {
+      fontWeight: "var(--weight-semibold)",
+      color: "var(--ink)"
+    }
+  }, r.quadra || "—"), " · ", r.quartos ?? "?", "q \xB7 ", r.banheiros ?? "?", "b \xB7 ", r.vagas ?? "?", "v \xB7 ", r.m2 ?? "?", " m\xB2", r.precoM2 != null ? /*#__PURE__*/React.createElement("span", null, " \xB7 R$ ", Number(r.precoM2).toLocaleString("pt-BR", {
+    maximumFractionDigits: 0
+  }), "/m\xB2") : null, r.dias != null ? /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "var(--muted)"
+    }
+  }, " \xB7 h\xE1 ", r.dias, "d") : null)), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: e => {
+      e.stopPropagation();
+      onMap && onMap();
+    },
+    title: "Ver no mapa",
+    style: {
+      border: "1px solid var(--line)",
+      background: "var(--surface-inset)",
+      cursor: "pointer",
+      borderRadius: "var(--radius-sm)",
+      padding: "6px 10px",
+      fontSize: "12px",
+      fontWeight: "var(--weight-semibold)",
+      color: "var(--accent)",
+      fontFamily: "var(--font-sans)"
+    }
+  }, "mapa"));
+}
+
+/** Cartão de estatística (Resumo): rótulo, valor grande, sublinha. */
+function StatCard({
+  label,
+  value,
+  sub,
+  style
+}) {
+  const [hover, setHover] = React.useState(false);
+  return /*#__PURE__*/React.createElement("div", {
+    onMouseEnter: () => setHover(true),
+    onMouseLeave: () => setHover(false),
+    style: {
+      background: "var(--surface-card)",
+      border: "1px solid var(--line)",
+      borderRadius: "var(--radius-card)",
+      padding: "var(--space-4)",
+      boxShadow: hover ? "var(--shadow-pop)" : "var(--shadow-card)",
+      transform: hover ? "translateY(-2px)" : "none",
+      transition: "all var(--dur-base) ease",
+      fontFamily: "var(--font-sans)",
+      ...style
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      color: "var(--muted)",
+      fontSize: "var(--text-xs)",
+      fontWeight: "var(--weight-semibold)",
+      textTransform: "uppercase",
+      letterSpacing: "var(--label-tracking)"
+    }
+  }, label), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: "var(--text-num)",
+      fontWeight: "var(--weight-bold)",
+      marginTop: "6px",
+      letterSpacing: "-0.02em",
+      color: "var(--ink)",
+      fontVariantNumeric: "tabular-nums"
+    }
+  }, value), sub ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      color: "var(--muted)",
+      fontSize: "var(--text-sm)",
+      marginTop: "2px"
+    }
+  }, sub) : null);
+}
+
+/** Linha de checkbox dos filtros, com contagem opcional à direita. */
+function Checkbox({
+  label,
+  count,
+  checked,
+  onChange,
+  style
+}) {
+  const [hover, setHover] = React.useState(false);
+  return /*#__PURE__*/React.createElement("label", {
+    onMouseEnter: () => setHover(true),
+    onMouseLeave: () => setHover(false),
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: "9px",
+      padding: "6px 8px",
+      borderRadius: "var(--radius-sm)",
+      cursor: "pointer",
+      userSelect: "none",
+      background: hover ? "var(--accent-soft)" : "transparent",
+      transition: "background var(--dur-fast) ease",
+      fontFamily: "var(--font-sans)",
+      fontSize: "var(--text-base)",
+      color: "var(--ink)",
+      minHeight: "32px",
+      boxSizing: "border-box",
+      ...style
+    }
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "checkbox",
+    checked: !!checked,
+    onChange: e => onChange && onChange(e.target.checked),
+    style: {
+      width: "16px",
+      height: "16px",
+      accentColor: "var(--accent)",
+      cursor: "pointer",
+      margin: 0
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontWeight: checked ? "var(--weight-semibold)" : "var(--weight-regular)"
+    }
+  }, label), count != null ? /*#__PURE__*/React.createElement("span", {
+    style: {
+      marginLeft: "auto",
+      color: "var(--muted)",
+      fontSize: "var(--text-xs)",
+      fontVariantNumeric: "tabular-nums"
+    }
+  }, count) : null);
+}
+
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+/** Campo de texto/número com rótulo opcional; estilo inset do painel. */
+function Input({
+  label,
+  size = "md",
+  style,
+  wrapStyle,
+  ...rest
+}) {
+  const [focus, setFocus] = React.useState(false);
+  const input = /*#__PURE__*/React.createElement("input", _extends({}, rest, {
+    onFocus: e => {
+      setFocus(true);
+      rest.onFocus && rest.onFocus(e);
+    },
+    onBlur: e => {
+      setFocus(false);
+      rest.onBlur && rest.onBlur(e);
+    },
+    style: {
+      width: "100%",
+      padding: size === "sm" ? "8px 10px" : "11px 13px",
+      border: "1px solid " + (focus ? "var(--accent)" : "var(--line)"),
+      borderRadius: size === "sm" ? "9px" : "var(--radius-input)",
+      background: focus ? "#fff" : "var(--surface-inset)",
+      boxShadow: focus ? "var(--focus-ring)" : "none",
+      outline: "none",
+      font: "inherit",
+      fontFamily: "var(--font-sans)",
+      fontSize: size === "sm" ? "13px" : "var(--text-base)",
+      color: "var(--ink)",
+      transition: "all var(--dur-fast) ease",
+      boxSizing: "border-box",
+      ...style
+    }
+  }));
+  if (!label) return input;
+  return /*#__PURE__*/React.createElement("label", {
+    style: {
+      display: "block",
+      ...wrapStyle
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "block",
+      fontSize: "var(--text-xs)",
+      color: "var(--muted)",
+      fontWeight: "var(--weight-semibold)",
+      marginBottom: "6px",
+      fontFamily: "var(--font-sans)",
+      textTransform: "uppercase",
+      letterSpacing: "var(--label-tracking)"
+    }
+  }, label), input);
+}
+
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+/** Select estilizado do painel. options: strings ou {value,label}. */
+function Select({
+  label,
+  options = [],
+  size = "md",
+  style,
+  wrapStyle,
+  ...rest
+}) {
+  const [focus, setFocus] = React.useState(false);
+  const sel = /*#__PURE__*/React.createElement("select", _extends({}, rest, {
+    onFocus: e => {
+      setFocus(true);
+      rest.onFocus && rest.onFocus(e);
+    },
+    onBlur: e => {
+      setFocus(false);
+      rest.onBlur && rest.onBlur(e);
+    },
+    style: {
+      width: "100%",
+      padding: size === "sm" ? "8px 10px" : "10px 12px",
+      border: "1px solid " + (focus ? "var(--accent)" : "var(--line)"),
+      borderRadius: size === "sm" ? "9px" : "var(--radius-input)",
+      background: "var(--surface-inset)",
+      boxShadow: focus ? "var(--focus-ring)" : "none",
+      outline: "none",
+      font: "inherit",
+      fontFamily: "var(--font-sans)",
+      fontSize: size === "sm" ? "13px" : "var(--text-base)",
+      color: "var(--ink)",
+      cursor: "pointer",
+      boxSizing: "border-box",
+      ...style
+    }
+  }), options.map(o => {
+    const opt = typeof o === "string" ? {
+      value: o,
+      label: o
+    } : o;
+    return /*#__PURE__*/React.createElement("option", {
+      key: opt.value,
+      value: opt.value
+    }, opt.label);
+  }));
+  if (!label) return sel;
+  return /*#__PURE__*/React.createElement("label", {
+    style: {
+      display: "block",
+      ...wrapStyle
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "block",
+      fontSize: "var(--text-xs)",
+      color: "var(--muted)",
+      fontWeight: "var(--weight-semibold)",
+      marginBottom: "6px",
+      fontFamily: "var(--font-sans)",
+      textTransform: "uppercase",
+      letterSpacing: "var(--label-tracking)"
+    }
+  }, label), sel);
+}
+
+/** Toggle de marcação (Visitado / Contatado) — pill que liga/desliga. */
+function Toggle({
+  label,
+  detail,
+  on,
+  onChange,
+  style
+}) {
+  return /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: () => onChange && onChange(!on),
+    "aria-pressed": !!on,
+    style: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: "8px",
+      padding: "8px 12px",
+      border: "1px solid " + (on ? "var(--accent)" : "var(--line)"),
+      borderRadius: "var(--radius-input)",
+      cursor: "pointer",
+      fontFamily: "var(--font-sans)",
+      fontSize: "var(--text-base)",
+      fontWeight: "var(--weight-semibold)",
+      background: on ? "var(--accent-soft)" : "var(--surface-card)",
+      color: on ? "var(--accent)" : "var(--ink-2)",
+      transition: "all var(--dur-fast) ease",
+      ...style
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: "16px",
+      height: "16px",
+      borderRadius: "50%",
+      flex: "0 0 auto",
+      border: on ? "none" : "1.5px solid var(--line-strong)",
+      background: on ? "var(--accent)" : "transparent",
+      color: "#fff",
+      fontSize: "10px",
+      lineHeight: "16px",
+      textAlign: "center"
+    }
+  }, on ? "✓" : ""), label, detail ? /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontWeight: "var(--weight-regular)",
+      color: "var(--muted)",
+      fontSize: "var(--text-sm)"
+    }
+  }, detail) : null);
+}
+</script>
+
+<script type="text/babel">
+/* Nossa Casa · Painel — resumo e modal de detalhes (adaptado p/ Supabase) */
+const fmtBRL = (v) => (v == null ? "—" : "R$ " + Number(v).toLocaleString("pt-BR", { maximumFractionDigits: 0 }));
+const fmtBRL2 = (v) => (v == null ? "—" : "R$ " + Number(v).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+const andarLabel = (a) => (a == null ? "—" : a === 0 ? "Térreo" : a === 99 ? "Cobertura" : a + "º");
+
+/* ---------- RESUMO ---------- */
+function StatsView({ view }) {
+  const [scope, setScope] = React.useState("GERAL");
+  const quadras = React.useMemo(() => [...new Set(view.map((r) => r.quadraBase))].sort(), [view]);
+  let set = view;
+  if (scope === "Asa Norte" || scope === "Asa Sul") set = view.filter((r) => r.regiao === scope);
+  else if (scope !== "GERAL") set = view.filter((r) => r.quadraBase === scope);
+  const agg = (rows, f) => {
+    const a = rows.map((r) => r[f]).filter((x) => x != null);
+    if (!a.length) return null;
+    return { min: Math.min(...a), med: a.reduce((x, y) => x + y, 0) / a.length, max: Math.max(...a), n: a.length };
+  };
+  const venda = set.filter((r) => r.tipo === "Venda"), alug = set.filter((r) => r.tipo === "Aluguel");
+  const vm = agg(venda, "precoM2"), am = agg(alug, "precoM2"), vp = agg(venda, "preco"), ap = agg(alug, "preco");
+  return (
+    <div className="statsWrap">
+      <div className="scopeRow">
+        <Segmented size="sm" options={[{ value: "GERAL", label: "Geral" }, { value: "Asa Norte", label: "Asa Norte" }, { value: "Asa Sul", label: "Asa Sul" }]}
+          value={scope} onChange={setScope} />
+        <Select size="sm" value={quadras.includes(scope) ? scope : ""} onChange={(e) => e.target.value && setScope(e.target.value)}
+          options={[{ value: "", label: "Por quadra…" }, ...quadras]} style={{ width: "150px" }} />
+      </div>
+      <div className="statsGrid">
+        <StatCard label="Anúncios no escopo" value={set.length} sub={scope === "GERAL" ? "todos os filtros aplicados" : scope} />
+        <StatCard label="Venda · R$/m² médio" value={vm ? fmtBRL2(vm.med) : "—"} sub={vm ? vm.n + " anúncios · " + fmtBRL2(vm.min) + "–" + fmtBRL2(vm.max) : "sem dados"} />
+        <StatCard label="Aluguel · R$/m² médio" value={am ? fmtBRL2(am.med) : "—"} sub={am ? am.n + " anúncios · " + fmtBRL2(am.min) + "–" + fmtBRL2(am.max) : "sem dados"} />
+        <StatCard label="Venda · preço médio" value={vp ? fmtBRL(vp.med) : "—"} sub={vp ? fmtBRL(vp.min) + " – " + fmtBRL(vp.max) : "sem dados"} />
+        <StatCard label="Aluguel · preço médio" value={ap ? fmtBRL(ap.med) : "—"} sub={ap ? fmtBRL(ap.min) + " – " + fmtBRL(ap.max) : "sem dados"} />
+        <StatCard label="Visitados / Contatados" value={set.filter((r) => r.visitado).length + " / " + set.filter((r) => r.contatado).length} sub="nas suas marcações" />
+      </div>
+    </div>
+  );
+}
+
+/* ---------- MODAL DETALHE + CRM (+ galeria de fotos + lightbox) ---------- */
+function DetailModal({ listing: r, onClose, onSave, onToast, onToggleView, onToggleNoInterest }) {
+  const [cont, setCont] = React.useState(!!r.contatado);
+  const [nota, setNota] = React.useState(r.nota ?? "");
+  const [prop, setProp] = React.useState(r.proposta ?? "");
+  const [contra, setContra] = React.useState(r.contraproposta ?? "");
+  const [nome, setNome] = React.useState(r.contatoNome ?? "");
+  const [whats, setWhats] = React.useState(r.contatoWhats ?? "");
+  const [ctipo, setCtipo] = React.useState(r.contatoTipo ?? "");
+  const [com, setCom] = React.useState(r.comentarios ?? "");
+  const [saved, setSaved] = React.useState(false);
+  const [saving, setSaving] = React.useState(false);
+  const [marcando, setMarcando] = React.useState(false);
+  const [zoomSrc, setZoomSrc] = React.useState(null);
+  const cell = (k, v) => (
+    <div className="cell"><div className="kk">{k}</div><div className="vv">{v}</div></div>
+  );
+  const save = async () => {
+    const patch = {
+      contatado: cont,
+      dataContato: cont ? (r.dataContato || new Date().toISOString().slice(0, 10)) : null,
+      nota: nota === "" ? null : parseInt(nota),
+      proposta: prop === "" ? null : parseFloat(prop),
+      contraproposta: contra === "" ? null : parseFloat(contra),
+      contatoNome: nome || null, contatoWhats: whats || null,
+      contatoTipo: ctipo || null, comentarios: com || null,
+    };
+    setSaving(true);
+    try {
+      await onSave(r.id, patch);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 1500);
+      onToast("Anotações salvas");
+    } catch (e) {
+      onToast("Erro ao salvar: " + (e && e.message ? e.message : e));
+    } finally {
+      setSaving(false);
+    }
+  };
+  const marcar = async (fn) => {
+    if (marcando) return;
+    setMarcando(true);
+    try { await fn(r.id); } catch (e) { onToast("Erro: " + (e && e.message ? e.message : e)); }
+    finally { setMarcando(false); }
+  };
+  const imagens = r.imagens || [];
+  const listaMarcacao = (arr) => (arr || []).map((v, i) => (
+    <li key={i}>{window.emailPrefix(v.email)} <span style={{ color: "var(--muted)" }}>— {v.data || "sem data"}</span></li>
+  ));
+  return (
+    <div className="modalBg" onClick={(e) => { if (e.target.classList.contains("modalBg")) onClose(); }}>
+      <div className="modal" role="dialog" aria-modal="true">
+        <div className="mhead">
+          <div>
+            <h2>{fmtBRL(r.preco)} <Tag kind={r.tipo === "Venda" ? "venda" : "aluguel"} style={{ verticalAlign: "3px" }}>{r.tipo}</Tag></h2>
+            <div className="sub">
+              {r.quadra} · {r.regiao}
+              {r.link ? <> · <a href={r.link} target="_blank" rel="noopener">abrir anúncio ↗</a></> : null}
+            </div>
+          </div>
+          <button className="xBtn" onClick={onClose} aria-label="Fechar">✕</button>
+        </div>
+        <div className="mbody">
+          {imagens.length ? (
+            <div className="galleryGrid">
+              {imagens.map((src, i) => (
+                <img key={i} src={src} alt="" loading="lazy" onClick={() => setZoomSrc(src)} />
+              ))}
+            </div>
+          ) : null}
+          <div className="kv">
+            {cell("Quartos", r.quartos ?? "—")}{cell("Banheiros", r.banheiros ?? "—")}
+            {cell("Suítes", r.suites ?? "—")}{cell("Vagas", r.vagas ?? "—")}
+            {cell("Metragem", (r.m2 ?? "—") + " m²")}{cell("R$/m²", fmtBRL2(r.precoM2))}
+            {cell("Condomínio", fmtBRL(r.condominio))}{cell("Andar", andarLabel(r.andar))}
+            {cell("No site há", (r.dias ?? "—") + " dias")}{cell("Ativo", r.ativo ? "Sim" : "Não")}
+            {cell("CRECI", r.creci ?? "—")}
+          </div>
+          {r.descricao ? <div className="cell descCell"><div className="kk">Descrição</div><div className="descTxt">{r.descricao}</div></div> : null}
+
+          <div className="crm">
+            <h3>Visualização e interesse <span style={{ color: "var(--muted)", fontWeight: 500 }}>(compartilhado entre usuários)</span></h3>
+            <div className="togs">
+              <Toggle label="Eu já visualizei" detail={r.minhaDataVisualizacao || null} on={!!r.meuVisualizado}
+                onChange={() => marcar(onToggleView)} />
+              <Toggle label="Sem interesse" detail={r.minhaDataSemInteresse || null} on={!!r.meuSemInteresse}
+                onChange={() => marcar(onToggleNoInterest)} />
+            </div>
+            {(r.visualizadoPor || []).length ? (
+              <div className="markList">
+                <b>Visualizado por ({r.totalVisualizadoPor}):</b>
+                <ul>{listaMarcacao(r.visualizadoPor)}</ul>
+              </div>
+            ) : null}
+            {(r.semInteressePor || []).length ? (
+              <div className="markList">
+                <b>Marcaram sem interesse ({r.totalSemInteresse}):</b>
+                <ul>{listaMarcacao(r.semInteressePor)}</ul>
+              </div>
+            ) : null}
+          </div>
+
+          <div className="crm">
+            <h3>Minhas anotações <span style={{ color: "var(--muted)", fontWeight: 500 }}>(privadas, só eu vejo)</span></h3>
+            <div className="togs">
+              <Toggle label="Contatado" detail={r.dataContato || null} on={cont} onChange={setCont} />
+            </div>
+            <div className="crmGrid">
+              <Input label="Nota (0–10)" type="number" min="0" max="10" value={nota} onChange={(e) => setNota(e.target.value)} />
+              <Select label="Tipo de contato" value={ctipo} onChange={(e) => setCtipo(e.target.value)}
+                options={["", "Corretor", "Proprietário", "Imobiliária", "Outro"]} />
+              <Input label="Minha proposta (R$)" type="number" value={prop} onChange={(e) => setProp(e.target.value)} />
+              <Input label="Valor que eles fazem (R$)" type="number" value={contra} onChange={(e) => setContra(e.target.value)} />
+              <Input label="Nome do contato" value={nome} onChange={(e) => setNome(e.target.value)} />
+              <Input label="WhatsApp" value={whats} onChange={(e) => setWhats(e.target.value)} />
+            </div>
+            <label className="areaLbl">Comentários
+              <textarea rows="3" value={com} onChange={(e) => setCom(e.target.value)}></textarea>
+            </label>
+            <div className="savebar">
+              <Button onClick={save} disabled={saving}>{saving ? "Salvando…" : "Salvar anotações"}</Button>
+              <span className={"savedMsg" + (saved ? " show" : "")}>✓ salvo</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {zoomSrc ? (
+        <div className={"lightboxBg" + (zoomSrc ? " open" : "")} onClick={() => setZoomSrc(null)}>
+          <img src={zoomSrc} alt="" />
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+/* ---------- TABELA (condensada — sem scroll horizontal) ---------- */
+const TABLE_COLS = [
+  { k: "preco", label: "Anúncio", sortable: true },
+  { k: "precoM2", label: "R$/m²", sortable: true },
+  { k: "dias", label: "Dias", sortable: true },
+  { k: "acoes", label: "Ações", sortable: false },
+];
+
+function ListingTable({ rows, sortCol, sortDir, onSort, onDetails, showFotos, onToggleView, onToggleNoInterest }) {
+  return (
+    <table className="listTable">
+      <thead>
+        <tr>
+          {TABLE_COLS.map((c) => (
+            <th key={c.k} className={c.sortable ? "sortable" : ""} onClick={() => c.sortable && onSort(c.k)}>
+              {c.label}
+              {c.sortable ? <span className="arrow">{sortCol === c.k ? (sortDir > 0 ? "▲" : "▼") : "↕"}</span> : null}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((r) => {
+          const dot = r.meuVisualizado ? "var(--good)" : r.contatado ? "var(--warn)" : null;
+          const thumb = showFotos && r.imagens && r.imagens[0];
+          return (
+            <tr key={r.id} className={r.ativo ? "" : "inativo"} onClick={() => onDetails(r.id)}>
+              <td data-label="Anúncio">
+                <div className="tPrimary">
+                  {thumb ? <img src={thumb} alt="" loading="lazy" className="tThumb" /> : null}
+                  {dot ? <span className="tDot" style={{ background: dot }}></span> : null}
+                  <span className="tPreco">{fmtBRL(r.preco)}</span>
+                  <Tag kind={r.tipo === "Venda" ? "venda" : "aluguel"}>{r.tipo}</Tag>
+                  {!r.ativo ? <Tag kind="inativo">Inativo</Tag> : null}
+                  {r.totalVisualizadoPor > 0 ? <span className="viewsBadge" title="visualizações no app">👁 {r.totalVisualizadoPor}</span> : null}
+                </div>
+                <div className="tSub">
+                  <b>{r.quadra}</b> · {r.quartos ?? "?"}q · {r.banheiros ?? "?"}b · {r.vagas ?? "?"}v · {r.m2 ?? "?"} m²
+                </div>
+              </td>
+              <td data-label="R$/m²" className="tNum">{fmtBRL2(r.precoM2)}</td>
+              <td data-label="Dias" className="tNum">{r.dias ?? "—"}</td>
+              <td data-label="Ações" className="tActions" onClick={(e) => e.stopPropagation()}>
+                <button className="tBtn" onClick={() => onDetails(r.id)}>detalhes</button>
+                <button className={"tBtn" + (r.meuVisualizado ? " on" : "")} onClick={() => onToggleView(r.id)}>
+                  {r.meuVisualizado ? "✓ visualizado" : "👁 visualizado"}
+                </button>
+                <button className={"tBtn" + (r.meuSemInteresse ? " on" : "")} onClick={() => onToggleNoInterest(r.id)}>
+                  {r.meuSemInteresse ? "✕ sem interesse" : "sem interesse"}
+                </button>
+              </td>
+            </tr>
+          );
+        })}
+        {rows.length === 0 ? (
+          <tr><td colSpan={TABLE_COLS.length} className="tEmpty">Nenhum anúncio com esses filtros.</td></tr>
+        ) : null}
+      </tbody>
+    </table>
+  );
+}
+
+Object.assign(window, { StatsView, DetailModal, ListingTable, fmtBRL, fmtBRL2, andarLabel });
+
+</script>
+<script type="text/babel">
+/* Nossa Casa · Painel — app principal (adaptado p/ Supabase) */
+const FILTER_DEFAULTS = {
+  regioes: ["Asa Norte", "Asa Sul"],
+  tipos: ["Venda", "Aluguel"],
+  quadras: [],
+  ativos: true, inativos: false,
+  dias: "",
+  precoMin: "", precoMax: "",
+  m2Min: "", m2Max: "",
+  pm2Min: "", pm2Max: "",
+  quartos: [], banheiros: [], suites: [], vagas: [], andares: [],
+  soCont: false, soNota: false,
+  soMeuVisualizado: false, visualizadoPor: [],
+  mostrarSemInteresse: false, semInteressePor: [],
+  fotos: false,
+};
+
+const toggleIn = (arr, v) => (arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
+
+/* grupo de botões numéricos (1 2 3 4+) */
+function NumGroup({ values, selected, onToggle }) {
+  return (
+    <div className="numGroup">
+      {values.map((v) => (
+        <button key={v} type="button" className={"numBtn" + (selected.includes(v) ? " on" : "")}
+          onClick={() => onToggle(v)}>{v === 4 ? "4+" : v}</button>
+      ))}
+    </div>
+  );
+}
+
+/* grupo com rótulos (usado no Andar: Térreo, 1º, 2º, 3º, 4º+, Cobertura) */
+function LabelGroup({ options, selected, onToggle }) {
+  return (
+    <div className="numGroup">
+      {options.map((o) => (
+        <button key={o.v} type="button" className={"numBtn" + (selected.includes(o.v) ? " on" : "")}
+          onClick={() => onToggle(o.v)}>{o.label}</button>
+      ))}
+    </div>
+  );
+}
+const ANDAR_OPTIONS = [
+  { v: 0, label: "Térreo" }, { v: 1, label: "1º" }, { v: 2, label: "2º" },
+  { v: 3, label: "3º" }, { v: 4, label: "4º+" }, { v: 99, label: "Cobertura" },
+];
+const matchAndar = (a, v) => (v === 4 ? (a != null && a >= 4 && a !== 99) : a === v);
+
+function Section({ title, active, onReset, children }) {
+  return (
+    <div className="fsec">
+      <div className="fsecHead">
+        <h3>{active ? <span className="activeDot"></span> : null}{title}</h3>
+        {active && onReset ? <button className="fsecReset" onClick={onReset}>limpar</button> : null}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function App({ initialData, user }) {
+  const [data, setData] = React.useState(initialData || []);
+  const [f, setF] = React.useState(FILTER_DEFAULTS);
+  const [sortCol, setSortCol] = React.useState("preco");
+  const [sortDir, setSortDir] = React.useState(-1);
+  const [detailId, setDetailId] = React.useState(null);
+  const [toastMsg, setToastMsg] = React.useState("");
+  const [drawer, setDrawer] = React.useState(false);
+  const [quadraBusca, setQuadraBusca] = React.useState("");
+  const toastT = React.useRef(null);
+
+  const set = (patch) => setF((old) => ({ ...old, ...patch }));
+  const num = (v) => (v === "" || v == null ? null : +v);
+  const toast = (m) => { setToastMsg(m); clearTimeout(toastT.current); toastT.current = setTimeout(() => setToastMsg(""), 2200); };
+
+  /* ---------- recarregar do Supabase ---------- */
+  const reload = async () => {
+    try {
+      const rows = await window.fetchAllData();
+      setData(rows.map(window.mapRow));
+      toast("Dados atualizados");
+    } catch (e) {
+      toast("Erro ao atualizar: " + (e && e.message ? e.message : e));
+    }
+  };
+
+  /* ---------- sair ---------- */
+  const doLogout = async () => {
+    await window.sb.auth.signOut();
+    location.reload();
+  };
+
+  /* ---------- salvar CRM privado (Supabase) ---------- */
+  const saveCrm = async (id, patch) => {
+    const dbPatch = {
+      imovel_id: id, user_id: user.id,
+      contatado: patch.contatado, data_contato: patch.dataContato,
+      nota: patch.nota, proposta: patch.proposta, contraproposta: patch.contraproposta,
+      contato_nome: patch.contatoNome, contato_whats: patch.contatoWhats, contato_tipo: patch.contatoTipo,
+      comentarios: patch.comentarios, atualizado_em: new Date().toISOString(),
+    };
+    const { error } = await window.sb.from("crm").upsert(dbPatch, { onConflict: "imovel_id" });
+    if (error) throw error;
+    setData((old) => old.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+  };
+
+  /* ---------- marcações COMPARTILHADAS: visualizado / sem interesse (visíveis a todos) ---------- */
+  const saveMarcacao = async (id, patch) => {
+    const atual = data.find((r) => r.id === id) || {};
+    const merged = { ...atual, ...patch };
+    const dbPatch = {
+      imovel_id: id, user_id: user.id,
+      visualizado: !!merged.meuVisualizado, data_visualizacao: merged.minhaDataVisualizacao || null,
+      sem_interesse: !!merged.meuSemInteresse, data_sem_interesse: merged.minhaDataSemInteresse || null,
+      atualizado_em: new Date().toISOString(),
+    };
+    const { error } = await window.sb.from("marcacoes").upsert(dbPatch, { onConflict: "imovel_id,user_id" });
+    if (error) throw error;
+    const myEmail = user.email;
+    setData((old) => old.map((r) => {
+      if (r.id !== id) return r;
+      let visualizadoPor = (r.visualizadoPor || []).filter((v) => v.email !== myEmail);
+      if (dbPatch.visualizado) visualizadoPor.push({ email: myEmail, data: dbPatch.data_visualizacao });
+      let semInteressePor = (r.semInteressePor || []).filter((v) => v.email !== myEmail);
+      if (dbPatch.sem_interesse) semInteressePor.push({ email: myEmail, data: dbPatch.data_sem_interesse });
+      return {
+        ...r, ...patch,
+        visualizadoPor, totalVisualizadoPor: visualizadoPor.length,
+        semInteressePor, totalSemInteresse: semInteressePor.length,
+      };
+    }));
+  };
+
+  const toggleVisualizado = async (id) => {
+    const r = data.find((x) => x.id === id); if (!r) return;
+    const novo = !r.meuVisualizado;
+    const hoje = new Date().toISOString().slice(0, 10);
+    try {
+      await saveMarcacao(id, { meuVisualizado: novo, minhaDataVisualizacao: novo ? (r.minhaDataVisualizacao || hoje) : null });
+      toast(novo ? "Marcado como visualizado" : "Desmarcado");
+    } catch (e) { toast("Erro: " + (e && e.message ? e.message : e)); }
+  };
+  const toggleSemInteresse = async (id) => {
+    const r = data.find((x) => x.id === id); if (!r) return;
+    const novo = !r.meuSemInteresse;
+    const hoje = new Date().toISOString().slice(0, 10);
+    try {
+      await saveMarcacao(id, { meuSemInteresse: novo, minhaDataSemInteresse: novo ? (r.minhaDataSemInteresse || hoje) : null });
+      toast(novo ? "Marcado como sem interesse" : "Desmarcado");
+    } catch (e) { toast("Erro: " + (e && e.message ? e.message : e)); }
+  };
+
+  /* ---------- lista dinâmica de usuários que já marcaram algo (p/ os filtros "por usuário") ---------- */
+  const visualizadoresUnicos = React.useMemo(() => {
+    const m = new Map();
+    data.forEach((r) => (r.visualizadoPor || []).forEach((v) => m.set(v.email, (m.get(v.email) || 0) + 1)));
+    return [...m.entries()].sort((a, b) => b[1] - a[1]);
+  }, [data]);
+  const semInteressadoresUnicos = React.useMemo(() => {
+    const m = new Map();
+    data.forEach((r) => (r.semInteressePor || []).forEach((v) => m.set(v.email, (m.get(v.email) || 0) + 1)));
+    return [...m.entries()].sort((a, b) => b[1] - a[1]);
+  }, [data]);
+
+  /* ---------- lista dinâmica de quadras (p/ o filtro por quadra) ---------- */
+  const quadrasUnicas = React.useMemo(() => {
+    const m = new Map();
+    data.forEach((r) => { if (r.quadraBase) m.set(r.quadraBase, (m.get(r.quadraBase) || 0) + 1); });
+    return [...m.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+  }, [data]);
+  const quadrasFiltradasBusca = quadrasUnicas.filter(([q]) => q.toLowerCase().includes(quadraBusca.toLowerCase()));
+
+  /* ---------- filtragem ---------- */
+  const filtered = React.useMemo(() => data.filter((r) => {
+    if (!f.regioes.includes(r.regiao)) return false;
+    if (f.quadras.length && !f.quadras.includes(r.quadraBase)) return false;
+    if (!f.tipos.includes(r.tipo)) return false;
+    if (!((f.ativos && r.ativo) || (f.inativos && !r.ativo))) return false;
+    const d = num(f.dias); if (d != null && (r.dias == null || r.dias > d)) return false;
+    const pMin = num(f.precoMin), pMax = num(f.precoMax);
+    if (pMin != null && r.preco < pMin) return false;
+    if (pMax != null && r.preco > pMax) return false;
+    const aMin = num(f.m2Min), aMax = num(f.m2Max);
+    if (aMin != null && r.m2 < aMin) return false;
+    if (aMax != null && r.m2 > aMax) return false;
+    const mMin = num(f.pm2Min), mMax = num(f.pm2Max);
+    if (mMin != null && r.precoM2 < mMin) return false;
+    if (mMax != null && r.precoM2 > mMax) return false;
+    if (f.quartos.length && !f.quartos.some((q) => (q === 4 ? r.quartos >= 4 : r.quartos === q))) return false;
+    if (f.banheiros.length && !f.banheiros.some((q) => (q === 4 ? r.banheiros >= 4 : r.banheiros === q))) return false;
+    if (f.suites.length && !f.suites.some((q) => (q === 3 ? r.suites >= 3 : r.suites === q))) return false;
+    if (f.vagas.length && !f.vagas.some((q) => (q === 4 ? r.vagas >= 4 : r.vagas === q))) return false;
+    if (f.andares.length && !f.andares.some((v) => matchAndar(r.andar, v))) return false;
+    if (!f.mostrarSemInteresse && r.meuSemInteresse) return false;
+    if (f.soMeuVisualizado && !r.meuVisualizado) return false;
+    if (f.visualizadoPor.length && !f.visualizadoPor.some((email) => (r.visualizadoPor || []).some((v) => v.email === email))) return false;
+    if (f.semInteressePor.length && !f.semInteressePor.some((email) => (r.semInteressePor || []).some((v) => v.email === email))) return false;
+    if (f.soCont && !r.contatado) return false;
+    if (f.soNota && r.nota == null) return false;
+    return true;
+  }), [data, f]);
+
+  const sorted = React.useMemo(() => [...filtered].sort((a, b) => {
+    const x = a[sortCol], y = b[sortCol];
+    if (x == null) return 1; if (y == null) return -1;
+    return (typeof x === "string" ? x.localeCompare(y) : x - y) * sortDir;
+  }), [filtered, sortCol, sortDir]);
+
+  /* ---------- chips de filtros ativos ---------- */
+  const kNum = (v) => Number(v).toLocaleString("pt-BR");
+  const range = (min, max, unit) => (min !== "" && max !== "") ? kNum(min) + "–" + kNum(max) + unit
+    : min !== "" ? "a partir de " + kNum(min) + unit : "até " + kNum(max) + unit;
+  const andarTxt = (v) => ANDAR_OPTIONS.find((o) => o.v === v)?.label ?? v;
+  const chips = [];
+  if (f.regioes.length === 1) chips.push({ k: "reg", label: "Região", value: f.regioes[0], reset: () => set({ regioes: FILTER_DEFAULTS.regioes }) });
+  if (f.quadras.length) chips.push({ k: "quad", label: "Quadra", value: [...f.quadras].sort().join(", "), reset: () => set({ quadras: [] }) });
+  if (f.tipos.length === 1) chips.push({ k: "tipo", label: "Operação", value: f.tipos[0], reset: () => set({ tipos: FILTER_DEFAULTS.tipos }) });
+  if (f.inativos && !f.ativos) chips.push({ k: "st", label: "Status", value: "só inativos", reset: () => set({ ativos: true, inativos: false }) });
+  else if (f.inativos && f.ativos) chips.push({ k: "st", label: "Status", value: "inclui inativos", reset: () => set({ inativos: false }) });
+  if (f.dias !== "") chips.push({ k: "dias", label: "No site", value: "até " + f.dias + " dias", reset: () => set({ dias: "" }) });
+  if (f.precoMin !== "" || f.precoMax !== "") chips.push({ k: "preco", label: "Preço", value: range(f.precoMin, f.precoMax, ""), reset: () => set({ precoMin: "", precoMax: "" }) });
+  if (f.m2Min !== "" || f.m2Max !== "") chips.push({ k: "m2", label: "Metragem", value: range(f.m2Min, f.m2Max, " m²"), reset: () => set({ m2Min: "", m2Max: "" }) });
+  if (f.pm2Min !== "" || f.pm2Max !== "") chips.push({ k: "pm2", label: "R$/m²", value: range(f.pm2Min, f.pm2Max, ""), reset: () => set({ pm2Min: "", pm2Max: "" }) });
+  if (f.quartos.length) chips.push({ k: "qt", label: "Quartos", value: [...f.quartos].sort().map((q) => (q === 4 ? "4+" : q)).join(", "), reset: () => set({ quartos: [] }) });
+  if (f.banheiros.length) chips.push({ k: "bn", label: "Banheiros", value: [...f.banheiros].sort().map((q) => (q === 4 ? "4+" : q)).join(", "), reset: () => set({ banheiros: [] }) });
+  if (f.suites.length) chips.push({ k: "st2", label: "Suítes", value: [...f.suites].sort().map((q) => (q === 3 ? "3+" : q)).join(", "), reset: () => set({ suites: [] }) });
+  if (f.vagas.length) chips.push({ k: "vg", label: "Vagas", value: [...f.vagas].sort().map((q) => (q === 4 ? "4+" : q)).join(", "), reset: () => set({ vagas: [] }) });
+  if (f.andares.length) chips.push({ k: "an", label: "Andar", value: [...f.andares].map(andarTxt).join(", "), reset: () => set({ andares: [] }) });
+  if (f.soMeuVisualizado) chips.push({ k: "vis", value: "Já visualizei", reset: () => set({ soMeuVisualizado: false }) });
+  if (f.visualizadoPor.length) chips.push({ k: "visp", label: "Visualizado por", value: f.visualizadoPor.map(window.emailPrefix).join(", "), reset: () => set({ visualizadoPor: [] }) });
+  if (f.mostrarSemInteresse) chips.push({ k: "semint", value: "Incluindo sem interesse (meu)", reset: () => set({ mostrarSemInteresse: false }) });
+  if (f.semInteressePor.length) chips.push({ k: "semintp", label: "Sem interesse por", value: f.semInteressePor.map(window.emailPrefix).join(", "), reset: () => set({ semInteressePor: [] }) });
+  if (f.soCont) chips.push({ k: "cont", value: "Só contatados", reset: () => set({ soCont: false }) });
+  if (f.soNota) chips.push({ k: "nota", value: "Só com nota", reset: () => set({ soNota: false }) });
+
+  const cnt = (fn) => data.filter(fn).length;
+  const focusMap = (id) => { setView("explorar"); setDrawer(false); setTimeout(() => mapRef.current && mapRef.current.focus(id), 80); };
+  const detail = detailId ? data.find((r) => r.id === detailId) : null;
+
+  const secActive = {
+    reg: f.regioes.length !== 2, quad: f.quadras.length > 0, tipo: f.tipos.length !== 2,
+    st: f.ativos !== true || f.inativos !== false, dias: f.dias !== "",
+    preco: f.precoMin !== "" || f.precoMax !== "", m2: f.m2Min !== "" || f.m2Max !== "",
+    pm2: f.pm2Min !== "" || f.pm2Max !== "", qt: f.quartos.length > 0, bn: f.banheiros.length > 0,
+    st2: f.suites.length > 0, vg: f.vagas.length > 0, an: f.andares.length > 0,
+    vis: f.soMeuVisualizado || f.visualizadoPor.length > 0,
+    semint: f.mostrarSemInteresse || f.semInteressePor.length > 0,
+    marc: f.soCont || f.soNota,
+  };
+  const nActive = chips.length;
+
+  /* ---------- filtros (coluna sempre visível) ---------- */
+  const filtersPane = (
+    <aside className={"filters" + (drawer ? " open" : "")}>
+      <div className="fTop">
+        <b>Filtros {nActive > 0 ? <Badge>{nActive}</Badge> : null}</b>
+        {nActive > 0 ? <button className="fsecReset" onClick={() => set(FILTER_DEFAULTS)}>Limpar tudo</button> : null}
+        <button className="xBtn drawerOnly" onClick={() => setDrawer(false)} aria-label="Fechar filtros">✕</button>
+      </div>
+      <Section title="Região" active={secActive.reg} onReset={() => set({ regioes: FILTER_DEFAULTS.regioes })}>
+        <Checkbox label="Asa Norte" count={cnt((r) => r.regiao === "Asa Norte")} checked={f.regioes.includes("Asa Norte")} onChange={() => set({ regioes: toggleIn(f.regioes, "Asa Norte") })} />
+        <Checkbox label="Asa Sul" count={cnt((r) => r.regiao === "Asa Sul")} checked={f.regioes.includes("Asa Sul")} onChange={() => set({ regioes: toggleIn(f.regioes, "Asa Sul") })} />
+      </Section>
+      <Section title="Quadra" active={secActive.quad} onReset={() => { set({ quadras: [] }); setQuadraBusca(""); }}>
+        <Input size="sm" placeholder="Buscar quadra…" value={quadraBusca} onChange={(e) => setQuadraBusca(e.target.value)} style={{ marginBottom: "8px" }} />
+        <div className="quadraList">
+          {quadrasFiltradasBusca.length ? quadrasFiltradasBusca.map(([q, count]) => (
+            <Checkbox key={q} label={q} count={count} checked={f.quadras.includes(q)}
+              onChange={() => set({ quadras: toggleIn(f.quadras, q) })} />
+          )) : <div style={{ color: "var(--muted)", fontSize: "var(--text-sm)", padding: "4px 6px" }}>nenhuma quadra encontrada</div>}
+        </div>
+      </Section>
+      <Section title="Operação" active={secActive.tipo} onReset={() => set({ tipos: FILTER_DEFAULTS.tipos })}>
+        <Checkbox label="Compra / Venda" count={cnt((r) => r.tipo === "Venda")} checked={f.tipos.includes("Venda")} onChange={() => set({ tipos: toggleIn(f.tipos, "Venda") })} />
+        <Checkbox label="Aluguel" count={cnt((r) => r.tipo === "Aluguel")} checked={f.tipos.includes("Aluguel")} onChange={() => set({ tipos: toggleIn(f.tipos, "Aluguel") })} />
+      </Section>
+      <Section title="Status" active={secActive.st} onReset={() => set({ ativos: true, inativos: false })}>
+        <Checkbox label="Ativos" checked={f.ativos} onChange={(v) => set({ ativos: v })} />
+        <Checkbox label="Inativos" checked={f.inativos} onChange={(v) => set({ inativos: v })} />
+      </Section>
+      <Section title="Anunciado há" active={secActive.dias} onReset={() => set({ dias: "" })}>
+        <Select size="sm" value={f.dias} onChange={(e) => set({ dias: e.target.value })}
+          options={[{ value: "", label: "Qualquer tempo" }, { value: "1", label: "Até 1 dia" }, { value: "3", label: "Até 3 dias" }, { value: "7", label: "Até 7 dias" }, { value: "15", label: "Até 15 dias" }, { value: "30", label: "Até 30 dias" }, { value: "60", label: "Até 60 dias" }, { value: "90", label: "Até 90 dias" }]} />
+      </Section>
+      <Section title="Preço (R$)" active={secActive.preco} onReset={() => set({ precoMin: "", precoMax: "" })}>
+        <div className="row2">
+          <Input size="sm" type="number" placeholder="mín" value={f.precoMin} onChange={(e) => set({ precoMin: e.target.value })} />
+          <Input size="sm" type="number" placeholder="máx" value={f.precoMax} onChange={(e) => set({ precoMax: e.target.value })} />
+        </div>
+      </Section>
+      <Section title="Metragem (m²)" active={secActive.m2} onReset={() => set({ m2Min: "", m2Max: "" })}>
+        <div className="row2">
+          <Input size="sm" type="number" placeholder="mín" value={f.m2Min} onChange={(e) => set({ m2Min: e.target.value })} />
+          <Input size="sm" type="number" placeholder="máx" value={f.m2Max} onChange={(e) => set({ m2Max: e.target.value })} />
+        </div>
+      </Section>
+      <Section title="R$/m²" active={secActive.pm2} onReset={() => set({ pm2Min: "", pm2Max: "" })}>
+        <div className="row2">
+          <Input size="sm" type="number" placeholder="mín" value={f.pm2Min} onChange={(e) => set({ pm2Min: e.target.value })} />
+          <Input size="sm" type="number" placeholder="máx" value={f.pm2Max} onChange={(e) => set({ pm2Max: e.target.value })} />
+        </div>
+      </Section>
+      <Section title="Quartos" active={secActive.qt} onReset={() => set({ quartos: [] })}>
+        <NumGroup values={[1, 2, 3, 4]} selected={f.quartos} onToggle={(v) => set({ quartos: toggleIn(f.quartos, v) })} />
+      </Section>
+      <Section title="Banheiros" active={secActive.bn} onReset={() => set({ banheiros: [] })}>
+        <NumGroup values={[1, 2, 3, 4]} selected={f.banheiros} onToggle={(v) => set({ banheiros: toggleIn(f.banheiros, v) })} />
+      </Section>
+      <Section title="Suítes" active={secActive.st2} onReset={() => set({ suites: [] })}>
+        <NumGroup values={[0, 1, 2, 3]} selected={f.suites} onToggle={(v) => set({ suites: toggleIn(f.suites, v) })} />
+      </Section>
+      <Section title="Vagas" active={secActive.vg} onReset={() => set({ vagas: [] })}>
+        <NumGroup values={[0, 1, 2]} selected={f.vagas} onToggle={(v) => set({ vagas: toggleIn(f.vagas, v) })} />
+      </Section>
+      <Section title="Andar" active={secActive.an} onReset={() => set({ andares: [] })}>
+        <LabelGroup options={ANDAR_OPTIONS} selected={f.andares} onToggle={(v) => set({ andares: toggleIn(f.andares, v) })} />
+      </Section>
+      <Section title="Visualizações" active={secActive.vis} onReset={() => set({ soMeuVisualizado: false, visualizadoPor: [] })}>
+        <Checkbox label="Já visualizei" checked={f.soMeuVisualizado} onChange={(v) => set({ soMeuVisualizado: v })} />
+        {visualizadoresUnicos.length ? (
+          <>
+            <div className="filterSubLabel">Visualizado por</div>
+            {visualizadoresUnicos.map(([email, count]) => (
+              <Checkbox key={email} label={window.emailPrefix(email)} count={count}
+                checked={f.visualizadoPor.includes(email)}
+                onChange={() => set({ visualizadoPor: toggleIn(f.visualizadoPor, email) })} />
+            ))}
+          </>
+        ) : null}
+      </Section>
+      <Section title="Sem interesse" active={secActive.semint} onReset={() => set({ mostrarSemInteresse: false, semInteressePor: [] })}>
+        <Checkbox label="Mostrar as que marquei sem interesse" checked={f.mostrarSemInteresse} onChange={(v) => set({ mostrarSemInteresse: v })} />
+        {semInteressadoresUnicos.length ? (
+          <>
+            <div className="filterSubLabel">Sem interesse (marcado por)</div>
+            {semInteressadoresUnicos.map(([email, count]) => (
+              <Checkbox key={email} label={window.emailPrefix(email)} count={count}
+                checked={f.semInteressePor.includes(email)}
+                onChange={() => set({ semInteressePor: toggleIn(f.semInteressePor, email) })} />
+            ))}
+          </>
+        ) : null}
+      </Section>
+      <Section title="Minhas marcações" active={secActive.marc} onReset={() => set({ soCont: false, soNota: false })}>
+        <Checkbox label="Só contatados" count={cnt((r) => r.contatado)} checked={f.soCont} onChange={(v) => set({ soCont: v })} />
+        <Checkbox label="Só com nota" count={cnt((r) => r.nota != null)} checked={f.soNota} onChange={(v) => set({ soNota: v })} />
+      </Section>
+      <Section title="Exibição">
+        <Checkbox label="Mostrar fotos na tabela" checked={f.fotos} onChange={(v) => set({ fotos: v })} />
+      </Section>
+      <div className="drawerOnly fApply">
+        <Button fullWidth onClick={() => setDrawer(false)}>Ver {filtered.length} resultados</Button>
+      </div>
+    </aside>
+  );
+
+  return (
+    <div className="shell">
+      <header className="top">
+        <button className="menuBtn" onClick={() => setDrawer(true)}>Filtros {nActive > 0 ? <Badge>{nActive}</Badge> : null}</button>
+        <div className="brand">Nossa Casa <small>· {data.length} anúncios</small></div>
+        <div className="spacer"></div>
+        <span className="who">{user?.email || ""}</span>
+        <Button variant="ghost" size="sm" onClick={reload}>Atualizar</Button>
+        <Button variant="outline" size="sm" onClick={doLogout}>Sair</Button>
+      </header>
+
+      <div className="layout">
+        {drawer ? <div className="drawerBg" onClick={() => setDrawer(false)}></div> : null}
+        {filtersPane}
+
+        <main>
+          <div className="topFixed">
+            <div className="chipsBar">
+              <span className="countLine">Mostrando <b>{filtered.length}</b> de {data.length} anúncios</span>
+              {chips.map((c) => <Chip key={c.k} label={c.label} value={c.value} onRemove={c.reset} />)}
+              {chips.length > 1 ? <button className="fsecReset" onClick={() => set(FILTER_DEFAULTS)}>Limpar tudo</button> : null}
+            </div>
+            <StatsView view={filtered} />
+          </div>
+
+          <div className="listCol">
+            <ListingTable rows={sorted} sortCol={sortCol} sortDir={sortDir} showFotos={f.fotos}
+              onSort={(c) => { if (c === sortCol) setSortDir(-sortDir); else { setSortCol(c); setSortDir(-1); } }}
+              onDetails={(id) => setDetailId(id)}
+              onToggleView={toggleVisualizado} onToggleNoInterest={toggleSemInteresse} />
+          </div>
+        </main>
+      </div>
+
+      {detail ? <DetailModal listing={detail} onClose={() => setDetailId(null)} onSave={saveCrm} onToast={toast}
+        onToggleView={toggleVisualizado} onToggleNoInterest={toggleSemInteresse} /> : null}
+      <div className={"toast" + (toastMsg ? " show" : "")}>{toastMsg}</div>
+    </div>
+  );
+}
+
+window.__authReady.then(async ({ user }) => {
+  let mapped = [];
+  try {
+    const rows = await window.fetchAllData();
+    mapped = rows.map(window.mapRow);
+  } catch (e) {
+    console.error(e);
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(<App initialData={mapped} user={user} />);
+});
+
+</script>
+
+</body>
+</html>
